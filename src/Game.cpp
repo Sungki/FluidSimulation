@@ -4,7 +4,7 @@
 
 Game::Game()
 {
-    window.create(sf::VideoMode(N, N, 32), "FluidSimulation");
+    window.create(sf::VideoMode(N*SCALE, N*SCALE, 32), "FluidSimulation");
 }
 
 void Game::HandleInput()
@@ -15,15 +15,17 @@ void Game::HandleInput()
     }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-    {
-        mouseCoords = sf::Mouse::getPosition(window);
-        fluid->AddDensity(mouseCoords.x, mouseCoords.y, 100);
-    }
+        fluid->AddDensity(currentMouse.y/SCALE, currentMouse.x/SCALE, 200);
+
+    currentMouse = sf::Mouse::getPosition(window);
 }
 
 void Game::Run()
 {
-    fluid = new Fluid(N, 0.1, 0, 0);
+    fluid = new Fluid(N, 0.2, 0, 0.0000001f);
+
+    previousMouse = sf::Mouse::getPosition(window);
+    currentMouse = sf::Mouse::getPosition(window);
 
     while (window.isOpen()) {
         HandleInput();
@@ -33,10 +35,16 @@ void Game::Run()
 
 void Game::Render()
 {
-    fluid->AddVelocity(mouseCoords.x, mouseCoords.y, 0.5, 0.5);
+    float amountX = currentMouse.x - previousMouse.x;
+    float amountY = currentMouse.y - previousMouse.y;
+
+    fluid->AddVelocity(currentMouse.y/SCALE, currentMouse.x/SCALE, amountY / 10, amountX / 10);
+
+    previousMouse = currentMouse;
 
     fluid->Step();
     fluid->Render(window);
+//    fluid->FadeDensity(N * N);
 
     window.display();
 }

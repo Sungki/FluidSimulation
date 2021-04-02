@@ -2,20 +2,20 @@
 
 Fluid::Fluid(int N, float _dt, float diffusion, float viscosity)
 {
-    iter = 4;
-    SCALE = 4;
+    iter = 16;
+    scale = 4;
 
     size = N;
     dt = _dt;
     diff = diffusion;
     visc = viscosity;
 
-    InitArr(s, 256 * 256);
-    InitArr(density, 256 * 256);
-    InitArr(Vx, 256 * 256);
-    InitArr(Vy, 256 * 256);
-    InitArr(Vx0, 256 * 256);
-    InitArr(Vy0, 256 * 256);
+    InitArr(s, 128 * 128);
+    InitArr(density, 128 * 128);
+    InitArr(Vx, 128 * 128);
+    InitArr(Vy, 128 * 128);
+    InitArr(Vx0, 128 * 128);
+    InitArr(Vy0, 128 * 128);
 }
 
 void Fluid::InitArr(float arr[], int size) {
@@ -191,27 +191,20 @@ void Fluid::Render(sf::RenderWindow& win)
         for (int j = 0; j < size; j++)
         {
             sf::RectangleShape rect;
-            rect.setSize(sf::Vector2f(1, 1));
-            rect.setPosition(i, j);
+            rect.setSize(sf::Vector2f(scale, scale));
+            rect.setPosition(j* scale, i* scale);
 
             rect.setFillColor(sf::Color(255, 255, 255, (density[IX(i, j)] > 255) ? 255 : density[IX(i, j)]));
 
-
-//            float d = density[IX(i, j)];
-//            if (d > 255)
-//                d = 150;
-
-//            rect.setFillColor(sf::Color(255, 255, 255, d));
-
             win.draw(rect);
-/*            int wpixel = j * size * 4;
-            wpixel += i * 4;
-
-            pixels[wpixel] = d / 255;
-            pixels[wpixel + 1] = d / 255;
-            pixels[wpixel + 2] = d / 255;
-            pixels[wpixel + 3] = 255;*/
         }
+}
 
-//    return pixels;
+void Fluid::FadeDensity(int size)
+{
+    for (int i = 0; i < size; i++) 
+    {
+        float d = density[i];
+        density[i] = (d - 0.05f < 0) ? 0 : d - 0.05f;
+    }
 }

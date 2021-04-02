@@ -8,10 +8,12 @@ class Game
 {
 private:
     sf::RenderWindow window;
-    const int N = 256;
+    const int N = 128;
+    const int SCALE = 4;
     Fluid* fluid;
 
-    sf::Vector2i mouseCoords;
+    sf::Vector2i previousMouse;
+    sf::Vector2i currentMouse;
 
     void Render();
     void HandleInput();

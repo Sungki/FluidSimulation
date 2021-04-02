@@ -13,16 +13,16 @@ class Fluid
     float visc;
 
     int iter;
-    int SCALE;
+    int scale;
 
-    float s[256 * 256];
-    float density[256 * 256];
+    float s[128 * 128];
+    float density[128 * 128];
 
-    float Vx[256*256];
-    float Vy[256 * 256];
+    float Vx[128 * 128];
+    float Vy[128 * 128];
 
-    float Vx0[256 * 256];
-    float Vy0[256 * 256];
+    float Vx0[128 * 128];
+    float Vy0[128 * 128];
 
     int IX(int x, int y);
 
@@ -41,5 +41,6 @@ public:
     void Render(sf::RenderWindow& win);
     void AddDensity(int x, int y, float amount);
     void AddVelocity(int x, int y, float amountX, float amountY);
+    void FadeDensity(int size);
 };
 
