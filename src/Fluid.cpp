@@ -3,37 +3,36 @@
 Fluid::Fluid(int N, float _dt, float diffusion, float viscosity)
 {
     iter = 4;
+    SCALE = 4;
 
     size = N;
     dt = _dt;
     diff = diffusion;
     visc = viscosity;
 
-    s = new float[N * N];
-    density = new float[N * N];
-
-    Vx = new float[N * N];
-    Vy = new float[N * N];
-
-    Vx0 = new float[N * N];
-    Vy0 = new float[N * N];
+    InitArr(s, 256 * 256);
+    InitArr(density, 256 * 256);
+    InitArr(Vx, 256 * 256);
+    InitArr(Vy, 256 * 256);
+    InitArr(Vx0, 256 * 256);
+    InitArr(Vy0, 256 * 256);
 }
 
-Fluid::~Fluid()
-{
-    delete[] Vy0;
-    delete[] Vx0;
-
-    delete[] Vy;
-    delete[] Vx;
-
-    delete[] density;
-    delete[] s;
+void Fluid::InitArr(float arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = 0;
+    }
 }
 
 int Fluid::IX(int x, int y)
 {
-    return x + y * size;
+    if (x < 0) { x = 0; }
+    if (x > size - 1) { x = size - 1; }
+
+    if (y < 0) { y = 0; }
+    if (y > size - 1) { y = size - 1; }
+
+    return (y * size) + x;
 }
 
 void Fluid::AddDensity(int x, int y, float amount)
@@ -49,13 +48,13 @@ void Fluid::AddVelocity(int x, int y, float amountX, float amountY)
     Vy[index] += amountY;
 }
 
-void Fluid::Diffuse(int b, float* x, float* x0, float diff, float dt)
+void Fluid::Diffuse(int b, float x[], float x0[], float diff, float dt)
 {
     float a = dt * diff * (size - 2) * (size - 2);
     LinSolve(b, x, x0, a, 1 + 6 * a);
 }
 
-void Fluid::LinSolve(int b, float* x, float* x0, float a, float c)
+void Fluid::LinSolve(int b, float x[], float x0[], float a, float c)
 {
     float cRecip = 1.0 / c;
     for (int k = 0; k < iter; k++) {
@@ -74,7 +73,7 @@ void Fluid::LinSolve(int b, float* x, float* x0, float a, float c)
     }
 }
 
-void Fluid::Project(float* velocX, float* velocY, float* p, float* div)
+void Fluid::Project(float velocX[], float velocY[], float p[], float div[])
 {
     for (int j = 1; j < size - 1; j++) {
         for (int i = 1; i < size - 1; i++) {
@@ -103,7 +102,7 @@ void Fluid::Project(float* velocX, float* velocY, float* p, float* div)
     SetBnd(2, velocY);
 }
 
-void Fluid::Advect(int b, float* d, float* d0, float* velocX, float* velocY, float dt)
+void Fluid::Advect(int b, float d[], float d0[], float velocX[], float velocY[], float dt)
 {
     float i0, i1, j0, j1;
 
@@ -151,7 +150,7 @@ void Fluid::Advect(int b, float* d, float* d0, float* velocX, float* velocY, flo
     SetBnd(b, d);
 }
 
-void Fluid::SetBnd(int b, float* x)
+void Fluid::SetBnd(int b, float x[])
 {
     for (int i = 1; i < size - 1; i++) {
         x[IX(i, 0)] = b == 2 ? -x[IX(i, 1)] : x[IX(i, 1)];
@@ -170,17 +169,6 @@ void Fluid::SetBnd(int b, float* x)
 
 void Fluid::Step()
 {
-    int N = size;
-    float visc = this->visc;
-    float diff = this->diff;
-    float dt = this->dt;
-    float* Vx = this->Vx;
-    float* Vy = this->Vy;
-    float* Vx0 = this->Vx0;
-    float* Vy0 = this->Vy0;
-    float* s = this->s;
-    float* density = this->density;
-
     Diffuse(1, Vx0, Vx, visc, dt);
     Diffuse(2, Vy0, Vy, visc, dt);
 
@@ -193,4 +181,37 @@ void Fluid::Step()
 
     Diffuse(0, s, density, diff, dt);
     Advect(0, density, s, Vx, Vy, dt);
+}
+
+void Fluid::Render(sf::RenderWindow& win)
+{
+    win.clear();
+
+    for(int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++)
+        {
+            sf::RectangleShape rect;
+            rect.setSize(sf::Vector2f(1, 1));
+            rect.setPosition(i, j);
+
+            rect.setFillColor(sf::Color(255, 255, 255, (density[IX(i, j)] > 255) ? 255 : density[IX(i, j)]));
+
+
+//            float d = density[IX(i, j)];
+//            if (d > 255)
+//                d = 150;
+
+//            rect.setFillColor(sf::Color(255, 255, 255, d));
+
+            win.draw(rect);
+/*            int wpixel = j * size * 4;
+            wpixel += i * 4;
+
+            pixels[wpixel] = d / 255;
+            pixels[wpixel + 1] = d / 255;
+            pixels[wpixel + 2] = d / 255;
+            pixels[wpixel + 3] = 255;*/
+        }
+
+//    return pixels;
 }

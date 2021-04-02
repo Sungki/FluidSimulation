@@ -13,6 +13,12 @@ void Game::HandleInput()
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) window.close();
     }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    {
+        mouseCoords = sf::Mouse::getPosition(window);
+        fluid->AddDensity(mouseCoords.x, mouseCoords.y, 100);
+    }
 }
 
 void Game::Run()
@@ -27,9 +33,10 @@ void Game::Run()
 
 void Game::Render()
 {
-    window.clear();
+    fluid->AddVelocity(mouseCoords.x, mouseCoords.y, 0.5, 0.5);
 
     fluid->Step();
+    fluid->Render(window);
 
     window.display();
 }

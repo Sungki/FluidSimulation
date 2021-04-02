@@ -11,6 +11,8 @@ private:
     const int N = 256;
     Fluid* fluid;
 
+    sf::Vector2i mouseCoords;
+
     void Render();
     void HandleInput();
 
