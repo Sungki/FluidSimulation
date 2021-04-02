@@ -28,5 +28,8 @@ void Game::Run()
 void Game::Render()
 {
     window.clear();
+
+    fluid->Step();
+
     window.display();
 }

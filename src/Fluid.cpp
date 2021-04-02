@@ -2,7 +2,7 @@
 
 Fluid::Fluid(int N, float _dt, float diffusion, float viscosity)
 {
-    iter = 10;
+    iter = 4;
 
     size = N;
     dt = _dt;
@@ -166,4 +166,31 @@ void Fluid::SetBnd(int b, float* x)
     x[IX(0, size - 1)] = 0.5f * (x[IX(1, size - 1)] + x[IX(0, size - 2)]);
     x[IX(size - 1, 0)] = 0.5f * (x[IX(size - 2, 0)] + x[IX(size - 1, 1)]);
     x[IX(size - 1, size - 1)] = 0.5f * (x[IX(size - 2, size - 1)] + x[IX(size - 1, size - 2)]);
+}
+
+void Fluid::Step()
+{
+    int N = size;
+    float visc = this->visc;
+    float diff = this->diff;
+    float dt = this->dt;
+    float* Vx = this->Vx;
+    float* Vy = this->Vy;
+    float* Vx0 = this->Vx0;
+    float* Vy0 = this->Vy0;
+    float* s = this->s;
+    float* density = this->density;
+
+    Diffuse(1, Vx0, Vx, visc, dt);
+    Diffuse(2, Vy0, Vy, visc, dt);
+
+    Project(Vx0, Vy0, Vx, Vy);
+
+    Advect(1, Vx, Vx0, Vx0, Vy0, dt);
+    Advect(2, Vy, Vy0, Vx0, Vy0, dt);
+
+    Project(Vx, Vy, Vx0, Vy0);
+
+    Diffuse(0, s, density, diff, dt);
+    Advect(0, density, s, Vx, Vy, dt);
 }

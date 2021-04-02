@@ -33,5 +33,7 @@ class Fluid
 public:
     Fluid(int N, float _dt, float diffusion, float viscosity);
     ~Fluid();
+
+    void Step();
 };
 
