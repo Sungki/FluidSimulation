@@ -2,13 +2,14 @@
 #include <iostream>
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
+#include "Fluid.h"
 
 class Game
 {
 private:
     sf::RenderWindow window;
-    int window_width;
-    int window_height;
+    const int N = 256;
+    Fluid* fluid;
 
     void Render();
     void HandleInput();
