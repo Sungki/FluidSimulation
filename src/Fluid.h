@@ -1,5 +1,7 @@
 #pragma once
 
+#include <math.h>
+
 class Fluid
 {
     int size;
@@ -24,6 +26,9 @@ class Fluid
 
     void Diffuse(int b, float* x, float* x0, float diff, float dt);
     void LinSolve(int b, float* x, float* x0, float a, float c);
+    void Project(float* velocX, float* velocY, float* p, float* div);
+    void Advect(int b, float* d, float* d0, float* velocX, float* velocY, float dt);
+    void SetBnd(int b, float* x);
 
 public:
     Fluid(int N, float _dt, float diffusion, float viscosity);
