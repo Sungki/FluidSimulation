@@ -41,6 +41,6 @@ public:
     void Render(sf::RenderWindow& win);
     void AddDensity(int x, int y, float amount);
     void AddVelocity(int x, int y, float amountX, float amountY);
-    void FadeDensity(int size);
+    void Fade();
 };
 

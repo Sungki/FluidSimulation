@@ -2,8 +2,8 @@
 
 Fluid::Fluid(int N, float _dt, float diffusion, float viscosity)
 {
-    iter = 16;
-    scale = 4;
+    iter = 4;
+    scale = 5;
 
     size = N;
     dt = _dt;
@@ -192,7 +192,7 @@ void Fluid::Render(sf::RenderWindow& win)
         {
             sf::RectangleShape rect;
             rect.setSize(sf::Vector2f(scale, scale));
-            rect.setPosition(j* scale, i* scale);
+            rect.setPosition(i* scale, j* scale);
 
             rect.setFillColor(sf::Color(255, 255, 255, (density[IX(i, j)] > 255) ? 255 : density[IX(i, j)]));
 
@@ -200,11 +200,11 @@ void Fluid::Render(sf::RenderWindow& win)
         }
 }
 
-void Fluid::FadeDensity(int size)
+void Fluid::Fade()
 {
-    for (int i = 0; i < size; i++) 
+    for (int i = 0; i < size*size; i++)
     {
         float d = density[i];
-        density[i] = (d - 0.05f < 0) ? 0 : d - 0.05f;
+        density[i] = (d - 0.9f < 0) ? 0 : d - 0.9f;
     }
 }

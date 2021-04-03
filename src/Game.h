@@ -9,7 +9,7 @@ class Game
 private:
     sf::RenderWindow window;
     const int N = 128;
-    const int SCALE = 4;
+    const int SCALE = 5;
     Fluid* fluid;
 
     sf::Vector2i previousMouse;
